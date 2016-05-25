@@ -1,0 +1,11 @@
+{
+    "vm_name": "dcos-node",
+    "password": "",
+    "os_id": "72f92050-9425-11e5-9f77-0050569b685d",
+    "vm_count": 1,
+    "app_id": "863928c2-e2a3-4967-b236-6af29249959a",
+    "cpu": 2,
+    "ram": 2,
+    "area_id": "CN",
+    "disk_list": []
+}

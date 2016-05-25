@@ -1,0 +1,36 @@
+---
+
+- name: add ssh public key
+  authorized_key: user=root key="{{ lookup('file', './files/key.pub') }}"
+  register: add_ssh_public_key_result
+
+- name: show "add ssh public key" result
+  debug: var=add_ssh_public_key_result
+
+- name: Disallow password authentication
+  lineinfile: dest=/etc/ssh/sshd_config
+              regexp="^PasswordAuthentication"
+              line="PasswordAuthentication no"
+              state=present
+  notify:
+  - reload sshd service
+
+#- set_fact: node_list="{{ (curl_get_node_result.stdout | from_json)['data'][0]['vms'] }}"
+
+#- debug: msg="name {{ item.0.name }}, public network {{ item.1.ip }}"
+#- add_host: name={{ item.1.ip }} groups=dcos-node-public ansible_user=root ansible_ssh_pass={{ SSH_PWD }}
+#  when: item.0.name.find('dcos-node') != -1 and item.1.type == 'public' 
+#  with_subelements: 
+#    - "{{node_list}}"
+#    - netcard
+
+#- name: show hostvars
+#  debug: var=hostvars[inventory_hostname].groups['dcos-node-public']
+
+#- name: show hostname
+#  command: hostname
+#
+#- name: test docker engine
+#  command: docker info
+#  register: docker_info
+#

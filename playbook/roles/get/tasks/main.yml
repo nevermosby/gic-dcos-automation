@@ -1,0 +1,56 @@
+---
+
+- name: get the list of provisioned node
+  command: /bin/bash curl-get-node-list.sh {{ LA_APP_ID }}
+  args:
+    chdir: "/root/gh/gic-dcos-auto/playbook/scripts"
+  register: curl_get_node_result
+
+#- name: show "get node for DCOS" result
+#  debug: var=curl_get_node_result
+
+- set_fact: node_list="{{ (curl_get_node_result.stdout | from_json)['data'][0]['vms'] }}"
+
+- name: parse node ip for master and agent
+  command: /bin/bash parse-node-ip.sh {{ LA_APP_ID }}
+  args:
+    chdir: "/root/gh/gic-dcos-auto/playbook/scripts"
+  register: parse_node_ip_result
+
+- set_fact: dcos_node="{{ parse_node_ip_result.stdout | from_json }}"
+- set_fact: dcos_agent_node="{{ dcos_node.agent_node }}"
+- set_fact: dcos_master_node="{{ dcos_node.master_node }}"
+
+#- debug: msg="lookup configure file, "{{ lookup('file', '/root/gh/gic-dcos-auto/playbook/files/config.yaml-work') }}""
+
+- name: render the config.yml template
+  template:
+    src: "{{item}}"
+    dest: "/root/gh/gic-dcos-auto/playbook/files/config.yaml"
+  with_items:
+    - ./files/config.yaml-work
+
+#- debug: msg="name {{ item.0.name }}, public network {{ item.1.ip }}"
+- add_host: name={{ item.1.ip }} groups=dcos-node-public ansible_user=root ansible_ssh_pass={{ SSH_PWD }} ansible_ssh_private_key_file={{ private_key_file }}
+  when: item.0.name.find('dcos-node') != -1 and item.1.type == 'public' 
+  with_subelements: 
+    - "{{node_list}}"
+    - netcard
+
+- name: show dcos node with public ip
+  debug: var=hostvars[inventory_hostname].groups['dcos-node-public']
+
+- add_host: name={{ item.1.ip }} groups=dcos-boot-node-public ansible_user=root ansible_ssh_private_key_file={{ private_key_file }}
+  when: item.0.name.find('dcos-node001') != -1 and item.1.type == 'public' 
+  with_subelements: 
+    - "{{node_list}}"
+    - netcard
+- name: show dcos boot node with public ip
+  debug: var=hostvars[inventory_hostname].groups['dcos-boot-node-public']
+
+#- set_fact: working_node="{{ working_node + item.1.ip }}"
+#  when: item.0.name.find('dcos-node') != -1 and item.0.name.find('dcos-node001') == -1 and item.1.type == 'public' 
+#  with_subelements: 
+#    - "{{node_list}}"
+#    - netcard
+#- debug: msg="working node, {{ working_node_list }}"

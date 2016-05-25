@@ -1,0 +1,36 @@
+---
+
+- name: Create node for DCOS
+  hosts: localhost
+  vars:
+    LA_APP_ID: 863928c2-e2a3-4967-b236-6af29249959a
+    SSH_PWD:
+    private_key_file: /root/gh/gic-dcos-auto/playbook/files/key.pri
+    working_node: []
+    agent_node: []
+  remote_user: root
+  become: yes
+  roles:
+#    - create
+     - get
+#    - shellcmd
+
+- name: Prepare the target node before DCOS installation
+  hosts: dcos-node-public
+  vars:
+  remote_user: root
+  become: yes  
+  roles:
+    - add-public-key
+    - install-docker
+
+- name: Install DCOS on boot node
+  hosts: dcos-boot-node-public
+  vars:
+    private_key_file: /root/gh/gic-dcos-auto/playbook/files/key.pri
+    ip_detect_file: /root/gh/gic-dcos-auto/playbook/files/ip-detect
+    dcos_install_config_file: /root/gh/gic-dcos-auto/playbook/files/config.yaml
+  remote_user: root
+  become: yes
+  roles:
+    - install-dcos

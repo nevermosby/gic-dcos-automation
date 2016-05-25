@@ -1,0 +1,16 @@
+---
+
+- name: show hostname
+  command: hostname
+  register: host_name
+- debug: var=host_name
+
+- name: show host ip
+  debug: var=inventory_hostname
+
+- name: test docker client
+  command: docker info
+  register: docker_info
+
+- name: show "docker client" result
+  debug: var=docker_info

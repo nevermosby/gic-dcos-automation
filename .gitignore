@@ -1,0 +1,10 @@
+playbook/files/
+playbook/*.retry
+playbook/hosts
+docker-machine-auto/commands/create-cs.sh
+docker-machine-auto/machine
+docker-machine-auto/commands/bak
+docker-machine-auto/commands/create.sh
+docker-machine-auto/Dockerfile-dm
+dtr-domain-auto/src/*.log
+dtr-domain-auto/src/environments/

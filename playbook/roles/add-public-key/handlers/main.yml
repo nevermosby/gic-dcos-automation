@@ -1,0 +1,3 @@
+- name: reload sshd service
+#  command: service sshd reload
+  service: name=sshd state=reloaded

@@ -1,0 +1,55 @@
+---
+
+- name: create genconf folder
+  file:
+    path: /root/genconf
+    state: directory
+    mode: u=rwx,go=rx
+
+- name: copy ssh private key
+  copy: src={{ private_key_file }} dest=/root/genconf/ssh_key mode=600
+
+- name: copy ip-detect script
+  copy: src={{ ip_detect_file }} dest=/root/genconf/ip-detect
+
+- name: copy config.yaml for genconf
+  copy: src={{ dcos_install_config_file }} dest=/root/genconf/config.yaml
+
+- name: check config.yaml
+  command: cat /root/genconf/config.yaml
+  register: config
+- debug: msg="{{ config.stdout }}"
+
+- stat: path=/root/dcos_generate_config.sh
+  register: result
+
+- name: download script
+  command: curl -O https://downloads.dcos.io/dcos/EarlyAccess/dcos_generate_config.sh
+  when: result.stat.exists == False
+
+- name: run genconf
+  command: bash dcos_generate_config.sh --genconf
+  register: genconf
+- debug: msg="{{ genconf.stdout_lines }}"
+
+- name: run prereqs check
+  command: bash dcos_generate_config.sh --install-prereqs
+  register: precheck
+- debug: msg="{{ precheck.stdout_lines }}"
+
+- name: run preflight
+  command: bash dcos_generate_config.sh --preflight
+  register: preflight
+- debug: msg="{{ preflight.stdout_lines }}"
+
+- name: run deploy
+  command: bash dcos_generate_config.sh --deploy
+  register: deploy
+- debug: msg="{{ deploy.stdout_lines }}"
+
+- name: run postflight
+  command: bash dcos_generate_config.sh --postflight
+  register: postflight
+- debug: msg="{{ postflight.stdout_lines }}"
+
+- debug: msg="DCOS Installation Done. Checkout master public ip"
