@@ -45,10 +45,19 @@
   yum:
     name: docker-engine
     state: present
-  notify:
-    - reload systemctl daemon
-    - restart docker daemon
+#  notify:
+#    - reload systemctl daemon
+#    - restart docker daemon
 
+- name: reload systemctl daemon            
+  command: systemctl daemon-reload         
+                                           
+- name: restart docker daemon              
+  service:                                 
+    name: docker.service                   
+    enabled: yes                           
+    state: restarted                       
+                                           
 - name: create Docker configuration directory
   file:
     path: /etc/systemd/system/docker.service.d
@@ -59,12 +68,27 @@
   template:
     src: "{{item}}"
     dest: /etc/systemd/system/docker.service.d
-  notify:
-    - reload systemctl daemon
-    - restart docker daemon
-    - stop and disable firewall on centos
+#  notify:
+#    - reload systemctl daemon
+#    - restart docker daemon
+#    - stop and disable firewall on centos
   with_items:
     - docker.conf
+
+- name: reload systemctl daemon            
+  command: systemctl daemon-reload         
+                                           
+- name: restart docker daemon              
+  service:                                 
+    name: docker.service                   
+    enabled: yes                           
+    state: restarted                       
+                                           
+#- name: stop and disable firewall on centos
+#  service:                                 
+#    name: firewalld                        
+#    enabled: no                            
+#    state: stopped                 
 
 - name: check docker installation
   command: docker info

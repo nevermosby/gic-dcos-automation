@@ -1,0 +1,7 @@
+---
+
+- name: stop and disable firewall on centos
+  service:
+    name: firewalld
+    enabled: no
+    state: stopped

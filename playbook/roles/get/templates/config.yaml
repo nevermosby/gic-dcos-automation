@@ -1,0 +1,20 @@
+---
+agent_list:
+{% for item in dcos_agent_node %}
+  - {{ item }}
+{% endfor %}
+bootstrap_url: file:///opt/dcos_install_tmp
+cluster_name: DCOS
+exhibitor_storage_backend: static
+ip_detect_filename: /genconf/ip-detect
+master_discovery: static
+master_list:
+{% for item in dcos_master_node %}
+  - {{ item }}
+{% endfor %}
+process_timeout: 10000
+resolvers:
+- nameserver-ip-address1
+- nameserver-ip-address2
+ssh_port: 22
+ssh_user: root

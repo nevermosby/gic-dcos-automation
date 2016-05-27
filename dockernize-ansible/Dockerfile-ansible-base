@@ -1,6 +1,6 @@
 FROM ubuntu:14.04
 
-MAINTAINER David Li <wenquan.li@hpe.com>
+MAINTAINER David Li <legendarilylwq@gmail.com>
 
 
 RUN echo "===> Adding Ansible's PPA..."  && \

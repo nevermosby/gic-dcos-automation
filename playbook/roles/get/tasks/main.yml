@@ -49,8 +49,11 @@
   debug: var=hostvars[inventory_hostname].groups['dcos-boot-node-public']
 
 #- set_fact: working_node="{{ working_node + item.1.ip }}"
-#  when: item.0.name.find('dcos-node') != -1 and item.0.name.find('dcos-node001') == -1 and item.1.type == 'public' 
-#  with_subelements: 
-#    - "{{node_list}}"
-#    - netcard
-#- debug: msg="working node, {{ working_node_list }}"
+- add_host: name={{ item.1.ip }} groups=dcos-work-node-public ansible_user=root ansible_ssh_private_key_file={{ private_key_file }}
+  when: item.0.name.find('dcos-node') != -1 and item.0.name.find('dcos-node001') == -1 and item.1.type == 'public' 
+  with_subelements: 
+    - "{{node_list}}"
+    - netcard
+- name: show dcos work node with public ip
+  debug: var=hostvars[inventory_hostname].groups['dcos-work-node-public']
+

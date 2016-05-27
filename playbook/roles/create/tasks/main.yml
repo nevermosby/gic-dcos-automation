@@ -17,51 +17,8 @@
     chdir: "/root/gh/gic-dcos-auto/playbook/scripts"
   register: task_status
   until: task_status.stdout.find("FINISH") != -1
-  retries: 10
+  retries: 30
   delay: 60
 
 - debug: msg="Task {{ hostvars[inventory_hostname].create_node_task_id }} to create node is Done"
-
-
-#- name: show hostname
-#  command: hostname
-#
-#- name: test docker engine
-#  command: docker info
-#  register: docker_info
-#
-#- name: show "docker info" result
-#  debug: var=docker_info
-
-#- name: exec "docker run" to create vm for DTR
-#  command: /bin/sh docker-run.sh create-cs {{ VMNAME }}
-#  args:
-#    chdir: "{{ DM_AUTO_FOLDER }}"
-#  register: create_vm_result
-#
-#- name: show "create vm for DTR" result
-#  debug: var=create_vm_result
-#
-#- name: check DTR vm info
-#  command: /bin/sh docker-run.sh list {{ VMNAME }}
-#  args:
-#    chdir: "{{ DM_AUTO_FOLDER }}"
-#  register: list_vm_info
-#
-#- name: show DTR VM info
-#  debug: var=list_vm_info
-#
-#- name: get DTR vm IP
-#  command: /bin/sh docker-run.sh ip {{ VMNAME }}
-#  args:
-#    chdir: "{{ DM_AUTO_FOLDER }}"
-#  register: get_vm_ip
-#
-#- name: show DTR VM IP
-##  debug: msg="dtr ip is {{ get_vm_ip}}"
-#  debug: var=get_vm_ip
-#
-#- set_fact: dtr_ip={{ get_vm_ip.stdout }}
-#
-#- add_host: name={{ get_vm_ip.stdout }} groups=dtr ansible_ssh_private_key_file=/usr/src/machine/machines/{{ VMNAME }}/id_rsa
 

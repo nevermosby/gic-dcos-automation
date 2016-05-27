@@ -3,17 +3,16 @@
 - name: Create node for DCOS
   hosts: localhost
   vars:
-    LA_APP_ID: 863928c2-e2a3-4967-b236-6af29249959a
-    SSH_PWD:
+    LA_APP_ID: gic-datacenter-id
+    SSH_PWD: gic-vm-ssh-pwd
     private_key_file: /root/gh/gic-dcos-auto/playbook/files/key.pri
     working_node: []
     agent_node: []
   remote_user: root
   become: yes
   roles:
-#    - create
-     - get
-#    - shellcmd
+    - create
+    - get
 
 - name: Prepare the target node before DCOS installation
   hosts: dcos-node-public
@@ -34,3 +33,10 @@
   become: yes
   roles:
     - install-dcos
+
+- name: Config DCOS work node
+  hosts: dcos-work-node-public
+  remote_user: root
+  become: yes
+  roles:
+    - stop-firewall
